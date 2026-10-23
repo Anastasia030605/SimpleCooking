@@ -1,6 +1,8 @@
 import { NavLink, Navigate, Route, Routes } from 'react-router-dom';
 import { CatalogPage } from '../pages/CatalogPage';
-import { FavoritesPlaceholder, NewRecipePlaceholder, RecipePlaceholder } from '../pages/RoutePlaceholders';
+import { FavoritesPage } from '../pages/FavoritesPage';
+import { RecipePage } from '../pages/RecipePage';
+import { NewRecipePlaceholder } from '../pages/RoutePlaceholders';
 
 const navigation = [
   { to: '/recipes', label: 'Каталог', end: true },
@@ -40,8 +42,8 @@ export function App() {
           <Route path="/" element={<Navigate to="/recipes" replace />} />
           <Route path="/recipes" element={<CatalogPage />} />
           <Route path="/recipes/new" element={<NewRecipePlaceholder />} />
-          <Route path="/recipes/:id" element={<RecipePlaceholder />} />
-          <Route path="/favorites" element={<FavoritesPlaceholder />} />
+          <Route path="/recipes/:id" element={<RecipePage />} />
+          <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="*" element={<Navigate to="/recipes" replace />} />
         </Routes>
       </main>

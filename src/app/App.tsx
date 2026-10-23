@@ -18,7 +18,7 @@ export function App() {
         <div className="site-header__inner container">
           <NavLink className="brand" to="/recipes" aria-label="SimpleCooking — каталог рецептов">
             <span className="brand__mark" aria-hidden="true">♥</span>
-            <span>SimpleCooking</span>
+            <span className="brand__name">SimpleCooking</span>
           </NavLink>
           <nav aria-label="Основная навигация">
             <ul className="site-nav">

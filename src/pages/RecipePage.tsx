@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { useFavorites } from '../data/useFavorites';
 import { useRecipes } from '../data/useRecipes';
@@ -17,6 +17,7 @@ function formatIngredientAmount(ingredient: Ingredient, currentServings: number,
 }
 
 function RecipeDetails({ recipe }: { recipe: Recipe }) {
+  const location = useLocation();
   const [currentServings, setCurrentServings] = useState(recipe.baseServings);
   const [announcement, setAnnouncement] = useState('');
   const favorites = useFavorites();
@@ -37,6 +38,7 @@ function RecipeDetails({ recipe }: { recipe: Recipe }) {
 
   return (
     <article className="recipe-page">
+      {location.state?.published && <p className="form-notice" role="status">Рецепт опубликован в каталоге этого браузера.</p>}
       <Link className="back-link" to="/recipes">← Вернуться в каталог</Link>
       <header className="page-intro recipe-page__intro">
         <p className="eyebrow">{recipe.category}</p>

@@ -110,3 +110,19 @@ a { color: inherit; }
 @media (max-width: 700px) { .container { width: min(100% - 2rem, 1320px); } .site-header__inner { align-items: flex-start; flex-direction: column; gap: .8rem; padding-block: 1rem; } .site-nav { gap: .35rem; } .site-nav__link { font-size: .82rem; padding: .5rem; } .main-content { padding-block: 2rem 3rem; } .catalog-layout { grid-template-columns: 1fr; } .filter-panel { padding: 1.2rem; } .recipe-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 480px) { .recipe-grid { grid-template-columns: 1fr; } .catalog-results__heading, .catalog-footer { align-items: flex-start; flex-direction: column; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* Форма публикации использует общие компоненты и дизайн-токены. */
+.create-recipe-page { max-width: 850px; margin-inline: auto; }
+.recipe-form { display: grid; gap: 1.5rem; }
+.recipe-form > .button { justify-self: start; }
+.form-panel { display: grid; gap: 1.2rem; min-width: 0; padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.form-panel h2, .form-panel > p { margin: 0; }
+.form-panel > p { color: var(--text-muted); line-height: 1.6; }
+.form-panel > .button, .form-item > .button { justify-self: start; }
+.form-item { display: grid; gap: 1rem; min-width: 0; margin: 0; padding: 1rem; border: 1px solid var(--border); border-radius: 8px; }
+.form-item legend { padding-inline: .4rem; font-weight: 700; }
+.form-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: 1rem; }
+.form-notice { padding: 1rem; border-radius: 8px; background: var(--soft); line-height: 1.6; }
+.form-checkbox { display: flex; align-items: center; gap: .6rem; min-height: 44px; cursor: pointer; }
+.form-checkbox input { flex-shrink: 0; width: 1.25rem; height: 1.25rem; accent-color: var(--accent); }
+textarea.field__input { resize: vertical; }

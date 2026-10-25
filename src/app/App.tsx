@@ -6,6 +6,7 @@ import { CreateRecipePage } from '../features/recipes/CreateRecipePage';
 import { MyRecipesPage } from '../pages/MyRecipesPage';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { DisplaySettings } from '../features/accessibility/DisplaySettings';
 
 const navigation = [
   { to: '/recipes', label: 'Каталог', end: true },
@@ -43,6 +44,7 @@ export function App() {
           </nav>
         </div>
       </header>
+      <DisplaySettings />
       <main id="main-content" className="container main-content" tabIndex={-1}>
         <Routes>
           <Route path="/" element={<Navigate to="/recipes" replace />} />

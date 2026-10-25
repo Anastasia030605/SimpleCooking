@@ -15,6 +15,8 @@ npm run dev
 
 После запуска откройте адрес, напечатанный Vite (обычно `http://localhost:5173`). Проверка сборки: `npm run build`.
 
+Автоматический тест: `npm run test` (или `pnpm test`). Vitest и React Testing Library запускают в jsdom один сценарий: открытие рецепта → увеличение порций и пересчёт ингредиентов → добавление в избранное с сохранением в localStorage. Тест находится в `src/pages/RecipePage.test.tsx`.
+
 ## Что уже готово
 
 - React + TypeScript + Vite и маршруты `/recipes`, `/recipes/:id`, `/recipes/new`, `/favorites`.

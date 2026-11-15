@@ -55,6 +55,19 @@ export function saveRecipe(recipe: Recipe): void {
   notifyListeners();
 }
 
+/** Проверка автора для локального прототипа; на сервере права нужно проверять по сессии. */
+export function deleteRecipe(id: string, currentUserId: string): void {
+  const recipes = getRecipes();
+  const recipe = recipes.find((item) => item.id === id);
+  if (!recipe) throw new Error('Рецепт не найден.');
+  if (recipe.authorId !== currentUserId) {
+    throw new Error('Можно удалять только свои рецепты.');
+  }
+
+  window.localStorage.setItem(RECIPES_STORAGE_KEY, JSON.stringify(recipes.filter((item) => item.id !== id)));
+  notifyListeners();
+}
+
 /** Обновления работают в текущей вкладке и между открытыми вкладками. */
 export function subscribeToRecipes(listener: Listener): () => void {
   listeners.add(listener);

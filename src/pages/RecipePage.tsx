@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../components/Button';
+import { deleteRecipe } from '../data/recipeStore';
 import { useFavorites } from '../data/useFavorites';
 import { useRecipes } from '../data/useRecipes';
 import type { Ingredient, Recipe } from '../domain/recipe';
-import { formatMinutes, getTotalTimeMinutes } from '../domain/recipe';
+import { formatMinutes, getTotalTimeMinutes, TEST_USER } from '../domain/recipe';
+import { DeleteRecipeDialog } from '../features/recipes/DeleteRecipeDialog';
 
 function formatIngredientAmount(ingredient: Ingredient, currentServings: number, baseServings: number): string {
   if (ingredient.amount === null) return ingredient.note ?? 'по вкусу';
@@ -18,8 +20,11 @@ function formatIngredientAmount(ingredient: Ingredient, currentServings: number,
 
 function RecipeDetails({ recipe }: { recipe: Recipe }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [currentServings, setCurrentServings] = useState(recipe.baseServings);
   const [announcement, setAnnouncement] = useState('');
+  const [deleteError, setDeleteError] = useState('');
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const favorites = useFavorites();
   const selected = favorites.favoriteIds.includes(recipe.id);
 
@@ -34,6 +39,17 @@ function RecipeDetails({ recipe }: { recipe: Recipe }) {
     if (added !== null) {
       setAnnouncement(added ? 'Рецепт добавлен в избранное.' : 'Рецепт удалён из избранного.');
     }
+  }
+
+  function handleDelete(): void {
+    setDeleteError('');
+    try {
+      deleteRecipe(recipe.id, TEST_USER.id);
+    } catch {
+      setDeleteError('Не удалось удалить рецепт. Обновите страницу и попробуйте ещё раз.');
+      return;
+    }
+    navigate('/profile', { replace: true, state: { deletedRecipeTitle: recipe.title } });
   }
 
   return (
@@ -65,7 +81,23 @@ function RecipeDetails({ recipe }: { recipe: Recipe }) {
           {selected ? 'Удалить из избранного' : 'Добавить в избранное'}
         </Button>
         <Link className="back-link" to="/favorites">Открыть избранное</Link>
+        {recipe.authorId === TEST_USER.id && (
+          <Button
+            type="button"
+            variant="secondary"
+            aria-haspopup="dialog"
+            onClick={() => { setDeleteError(''); setDeleteDialogOpen(true); }}
+          >Удалить рецепт</Button>
+        )}
       </div>
+      {isDeleteDialogOpen && (
+        <DeleteRecipeDialog
+          recipeTitle={recipe.title}
+          error={deleteError}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteDialogOpen(false)}
+        />
+      )}
       {favorites.error && (
         <div className="message-panel">
           <p>{favorites.error}</p>

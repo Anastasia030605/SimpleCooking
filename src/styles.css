@@ -18,6 +18,7 @@
   --soft: #fff0f5;
   --border: #e8ccd7;
   --text-muted: #6e5660;
+  --dialog-backdrop: rgb(0 0 0 / .55);
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -61,6 +62,13 @@ a { color: inherit; }
 .button--secondary { color: var(--accent); background: var(--surface); }
 .button--secondary:hover { background: var(--soft); }
 .button:disabled { opacity: .55; cursor: not-allowed; }
+.confirm-dialog { width: min(100% - 24px, 32rem); max-height: calc(100dvh - 24px); margin: auto; padding: clamp(16px, 4vw, 24px); overflow-y: auto; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow-wrap: anywhere; }
+.confirm-dialog[open] { display: grid; gap: 1.25rem; }
+.confirm-dialog::backdrop { background: var(--dialog-backdrop); }
+.confirm-dialog__title { margin: 0; font-size: 1.4rem; line-height: 1.3; }
+.confirm-dialog__description, .confirm-dialog__error { margin: 0; line-height: 1.6; }
+.confirm-dialog__error { color: var(--error); }
+.confirm-dialog__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .75rem; }
 .catalog-results { min-width: 0; }
 .catalog-results__heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin: 0 0 1rem; }
 .result-count { margin: 0; color: var(--text-muted); font-size: .9rem; }

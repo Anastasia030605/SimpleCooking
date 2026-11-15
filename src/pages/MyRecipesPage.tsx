@@ -1,13 +1,18 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { RecipeCard } from '../components/RecipeCard';
 import { useRecipes } from '../data/useRecipes';
 import { TEST_USER } from '../domain/recipe';
 
 export function MyRecipesPage() {
+  const location = useLocation();
+  const deletedRecipeTitle: unknown = location.state?.deletedRecipeTitle;
   const { status, recipes, error, retry } = useRecipes();
   const ownRecipes = recipes.filter(recipe => recipe.authorId === TEST_USER.id);
   return <>
+    {typeof deletedRecipeTitle === 'string' && (
+      <p className="form-notice" role="status">Рецепт «{deletedRecipeTitle}» удалён.</p>
+    )}
     <header className="page-intro">
       <p className="eyebrow">{TEST_USER.name}</p>
       <h1>Мои рецепты</h1>

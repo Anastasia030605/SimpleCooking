@@ -4,33 +4,58 @@ import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { RecipeCard } from '../components/RecipeCard';
 import { useRecipes } from '../data/useRecipes';
-import { getTotalTimeMinutes } from '../domain/recipe';
+import { IngredientPicker } from '../features/recipes/IngredientPicker';
+import { filterRecipes, getIngredientOptions } from '../features/recipes/recipe-filters';
+import type { IngredientFilters } from '../features/recipes/recipe-filters';
+
+const EMPTY_INGREDIENT_FILTERS: IngredientFilters = { included: [], excluded: [], mode: 'all' };
 
 export function CatalogPage() {
   const { status, recipes, error, retry } = useRecipes();
   const [search, setSearch] = useState('');
   const [maxMinutes, setMaxMinutes] = useState('');
+  const [ingredientSearch, setIngredientSearch] = useState('');
+  const [ingredients, setIngredients] = useState<IngredientFilters>(EMPTY_INGREDIENT_FILTERS);
 
   const minutes = maxMinutes === '' ? null : Number(maxMinutes);
   const minutesError = maxMinutes !== '' && (!Number.isInteger(minutes) || Number(minutes) < 1)
     ? 'Введите целое число больше нуля.'
     : undefined;
 
-  const visibleRecipes = useMemo(() => {
-    const query = search.trim().toLocaleLowerCase('ru');
-    return recipes.filter((recipe) => {
-      const matchesText = query === '' || recipe.title.toLocaleLowerCase('ru').includes(query);
-      const matchesTime = minutes === null || getTotalTimeMinutes(recipe) <= minutes;
-      return matchesText && matchesTime;
+  const ingredientOptions = useMemo(
+    () => getIngredientOptions(recipes, [...ingredients.included, ...ingredients.excluded]),
+    [recipes, ingredients.included, ingredients.excluded],
+  );
+  const visibleRecipes = useMemo(
+    () => filterRecipes(recipes, { search, maxMinutes: minutes, ingredients }),
+    [recipes, search, minutes, ingredients],
+  );
+  const hasFilters = search !== '' || maxMinutes !== '' || ingredientSearch !== '' || ingredients.included.length > 0
+    || ingredients.excluded.length > 0 || ingredients.mode !== 'all';
+
+  function toggleIngredient(group: 'included' | 'excluded', value: string): void {
+    setIngredients((current) => {
+      const opposite = group === 'included' ? 'excluded' : 'included';
+      const selected = current[group];
+      return { ...current, [opposite]: current[opposite].filter((name) => name !== value), [group]: selected.includes(value)
+        ? selected.filter((name) => name !== value)
+        : [...selected, value] };
     });
-  }, [recipes, search, minutes]);
+  }
+
+  function resetFilters(): void {
+    setSearch('');
+    setMaxMinutes('');
+    setIngredientSearch('');
+    setIngredients(EMPTY_INGREDIENT_FILTERS);
+  }
 
   return (
     <div className="catalog-page">
       <section className="page-intro" aria-labelledby="catalog-title">
         <p className="eyebrow">Найдите идею</p>
         <h1 id="catalog-title">Что приготовим сегодня?</h1>
-        <p>Выбирайте рецепт по названию и времени, которое есть на готовку.</p>
+        <p>Выбирайте рецепт по названию, ингредиентам и времени, которое есть на готовку.</p>
       </section>
 
       <div className="catalog-layout">
@@ -57,11 +82,16 @@ export function CatalogPage() {
             error={minutesError}
           />
           <p className="filter-panel__hint">Учитываем подготовку и приготовление.</p>
+          {status === 'ready' && (
+            <IngredientPicker options={ingredientOptions} filters={ingredients} search={ingredientSearch}
+              onSearchChange={setIngredientSearch} onToggle={toggleIngredient}
+              onModeChange={(mode) => setIngredients((current) => ({ ...current, mode }))} />
+          )}
           <Button
             type="button"
             variant="secondary"
-            onClick={() => { setSearch(''); setMaxMinutes(''); }}
-            disabled={search === '' && maxMinutes === ''}
+            onClick={resetFilters}
+            disabled={!hasFilters}
           >
             Сбросить фильтры
           </Button>
@@ -96,8 +126,8 @@ export function CatalogPage() {
           {status === 'ready' && !minutesError && visibleRecipes.length === 0 && (
             <div className="message-panel" role="status">
               <h3>Рецепты не найдены</h3>
-              <p>Попробуйте изменить название или увеличить время приготовления.</p>
-              <Button type="button" variant="secondary" onClick={() => { setSearch(''); setMaxMinutes(''); }}>
+              <p>Попробуйте изменить название, увеличить время или изменить выбранные ингредиенты.</p>
+              <Button type="button" variant="secondary" onClick={resetFilters}>
                 Показать все рецепты
               </Button>
             </div>
